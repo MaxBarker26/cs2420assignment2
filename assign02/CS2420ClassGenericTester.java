@@ -191,7 +191,6 @@ public class CS2420ClassGenericTester {
 		student.addScore(80, "lab");
 		student.addScore(77.7, "quiz");
 		student.addScore(55, "poll");
-		System.out.println(student.computeFinalScore());
 		assertEquals("B-", student.computeFinalGrade());
 	}
 	
@@ -206,7 +205,6 @@ public class CS2420ClassGenericTester {
 		student.addScore(80, "lab");
 		student.addScore(77.7, "quiz");
 		student.addScore(22.2, "poll");
-		System.out.println(student.computeFinalScore() );
 		student.addScore(70, "lab");
 		student.addScore(54.5, "exam");				
 		assertEquals(73.025, student.computeFinalScore(), 0.001);

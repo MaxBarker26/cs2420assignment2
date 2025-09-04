@@ -12,8 +12,8 @@ import java.util.Scanner;
  * NOTE: The word "Class" in the name of this Java class means a collection of students and should not 
  *       be confused with the Java term class, which is a blueprint for making objects.
  * 
- * @author Erin Parker and ??
- * @version January 20, 2022
+ * @author Erin Parker and Josi Gac & Max Barker
+ * @version Sept 3, 2025
  */
 public class CS2420Class {
 
@@ -34,8 +34,10 @@ public class CS2420Class {
 	 *         false if the student was not added because they already exist in the collection
 	 */
 	public boolean addStudent(CS2420Student student) {
-		// FILL IN -- do not return false unless appropriate
-		return false;
+		if (!studentList.contains(student)) {
+			this.studentList.add(student);
+			return true;
+		} else return false;
 	}
 	
 	/**
@@ -45,7 +47,11 @@ public class CS2420Class {
 	 * @return the CS 2420 student with the given uNID, or null if no such student exists in the collection
 	 */
 	public CS2420Student lookup(int uNID) {
-		// FILL IN -- do not return null, unless appropriate
+		for (CS2420Student student : studentList) {
+			if (student.getUNID() == uNID) {
+				return student;
+			}
+		}
 		return null;
 	}
 	
@@ -57,8 +63,13 @@ public class CS2420Class {
 	 * 	     or an empty list if no such students exist in the collection
 	 */
 	public ArrayList<CS2420Student> lookup(EmailAddress contactInfo) {
-		// FILL IN -- do not return null
-		return null;
+		ArrayList<CS2420Student> contactList = new ArrayList<CS2420Student>();
+		for (CS2420Student student: studentList) {
+			if (student.getContactInfo().equals(contactInfo)) {
+				contactList.add(student);
+			}
+		}
+		return contactList;
 	}
 	
 	/**
@@ -72,7 +83,13 @@ public class CS2420Class {
 	 * @param category - the category in which to add the score
 	 */
 	public void addScore(int uNID, double score, String category) {
-		// FILL IN
+		if (category.equals("assignment") || category.equals("exam") || category.equals("lab") || category.equals("quiz") || category.equals("poll")) {
+			for (CS2420Student student : studentList) {
+				if (student.getUNID() == uNID) {
+					student.addScore(score, category);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -81,8 +98,14 @@ public class CS2420Class {
 	 * @return the average score, or 0 if there are no students in the collection
 	 */
 	public double computeClassAverage() {
-		// FILL IN -- do not return 0, unless appropriate
-		return 0;
+		double total = 0;
+		for (CS2420Student student: studentList) {
+			total += student.computeFinalScore();
+		}
+		if (total == 0) {
+			return 0;
+		}
+		return total / studentList.size();
 	}
 	
 	/**
@@ -91,8 +114,15 @@ public class CS2420Class {
 	 * @return the duplicate-free list of contact information, in any order
 	 */
 	public ArrayList<EmailAddress> getContactList() {
-		// FILL IN -- do not return null
-		return null;
+		ArrayList<EmailAddress> contactList = new ArrayList<EmailAddress>();
+		for (CS2420Student student : studentList) {
+			if (contactList.contains(student.getContactInfo())) {
+				continue;
+			} else {
+				contactList.add(student.getContactInfo());
+			}
+		}
+		return contactList;
 	}
 	
 	/**

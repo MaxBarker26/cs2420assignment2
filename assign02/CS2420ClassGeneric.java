@@ -154,15 +154,10 @@ public class CS2420ClassGeneric<Type> {
 	    for (CS2420StudentGeneric<Type> student : studentList) {
 	    	if (student.computeFinalScore() >= cutoffScore) {
 	    		copyList.add(student);
-	    		System.out.println(student.computeFinalScore());
 	    	}
 	    }
 	    
 	    sort(copyList, new OrderByScore());
-	    
-	    for (CS2420StudentGeneric<Type> student : copyList) {
-	    	System.out.println(student.computeFinalScore());
-	    }
 	   
 	    return copyList;
 	}
