@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +14,8 @@ import java.util.ArrayList;
 /**
  * This class contains tests for CS2420ClassGeneric.
  * 
- * @author Prof. Parker & Josi Gac & Max Barker
- * @version Sept 3, 2025
+ * @author Prof. Parker & ??
+ * @version August 31, 2023
  */
 public class CS2420ClassGenericTester {
 
@@ -126,12 +127,34 @@ public class CS2420ClassGenericTester {
 	}
 	
 	@Test
+	public void testVerySmallLookupUNIDDoesNotExist() {
+		CS2420StudentGeneric<MailingAddress> actual = verySmallClass.lookup(00001111);
+		assertEquals(null, actual);
+	}
+	
+	@Test
 	public void testVerySmallLookupContactInfo() {
 		UofUStudent expectedStudent = new UofUStudent("Riley", "Nguyen", 4545454);
 		ArrayList<CS2420StudentGeneric<MailingAddress>> actualStudents = verySmallClass.lookup(
 				new MailingAddress("2044 State St.", "Lebanon", "PA", 17042));
 		assertEquals(1, actualStudents.size());
 		assertEquals(expectedStudent, actualStudents.get(0));
+	}
+	
+	@Test
+	public void testVerySmallLookupContactInfoDoesNotExist() {
+		ArrayList<CS2420StudentGeneric<MailingAddress>> actualStudents = verySmallClass.lookup(
+				new MailingAddress("2044 State St.", "Scranton", "PA", 17042));
+		assertEquals(0, actualStudents.size());
+	}
+	
+	@Test
+	public void testVerySmallLookupContactInfoStudentsShareAddress() {
+		verySmallClass.addStudent(new CS2420StudentGeneric<MailingAddress>("Lane", "Doe", 1010100, 
+				new MailingAddress("101 Cherry St.", "Lebanon", "OH", 45036)));
+		ArrayList<CS2420StudentGeneric<MailingAddress>> actualStudents = verySmallClass.lookup(
+				new MailingAddress("101 Cherry St.", "Lebanon", "OH", 45036));
+		assertEquals(2, actualStudents.size());
 	}
 	
 	@Test
@@ -142,12 +165,26 @@ public class CS2420ClassGenericTester {
 	}
 	
 	@Test
+	public void testVerySmallAddDuplicateStudentDifferentClass() {
+		largeClass.addStudent(new CS2420StudentGeneric<PhoneNumber>("Jane", "Doe", 1010101, 
+				new PhoneNumber("(745) 456-3210")));
+		assertEquals(largeClass.lookup(1010101), verySmallClass.lookup(1010101));
+	}
+
+	@Test
 	public void testVerySmallAddNewStudent() {
 		boolean actual = verySmallClass.addStudent(new CS2420StudentGeneric<MailingAddress>("Jane", "Doe", 1010100, 
 				new MailingAddress("101 Cherry St.", "Lebanon", "OH", 45036)));
 		assertTrue(actual);		
 	}
-
+	
+	@Test
+	public void testAddNewStudentuNIDFrontPaddedWithZeros() {
+		boolean actual = verySmallClass.addStudent(new CS2420StudentGeneric<MailingAddress>("Jane", "Doe", 001010101, 
+				new MailingAddress("101 Cherry St.", "Lebanon", "OH", 45036)));
+		assertTrue(actual);
+	}
+	
 	@Test
 	public void testVerySmallStudentFinalScore0() {
 		CS2420StudentGeneric<MailingAddress> student = verySmallClass.lookup(2323232);
@@ -155,6 +192,12 @@ public class CS2420ClassGenericTester {
 		student.addScore(75, "exam");
 		student.addScore(89.2, "quiz");
 		assertEquals(0, student.computeFinalScore(), 0);
+	}
+	
+	@Test
+	public void testVerySmallStudentAddNegativeScore() {
+		CS2420StudentGeneric<MailingAddress> student = verySmallClass.lookup(2323232);
+		assertThrows(IllegalArgumentException.class, () -> student.addScore(-1, "assignment"));
 	}
 	
 	@Test
@@ -219,6 +262,7 @@ public class CS2420ClassGenericTester {
 		assertEquals("Doe", students.get(0).getLastName());
 	}	
 	
+	
 	// Large CS 2420 class tests -------------------------------------------------------------------------
 
 	@Test
@@ -271,6 +315,18 @@ public class CS2420ClassGenericTester {
 	}
 	
 	@Test
+	public void testOrderedByNameHyphenatedLastName() {
+		phase3Class.lookup(3).updateName("A", "Carson-Acres");
+		phase3Class.lookup(1).updateName("A", "Carson-Blake");
+		ArrayList<CS2420StudentGeneric<Integer>> actual = phase3Class.getOrderedByName();
+		assertEquals(4, actual.size());
+		assertEquals(new CS2420StudentGeneric<Integer>("A", "Carson-Acres", 3, 3), actual.get(1));
+		assertEquals(new CS2420StudentGeneric<Integer>("A", "B", 2, 2), actual.get(0));
+		assertEquals(new CS2420StudentGeneric<Integer>("A", "Carson-Blake", 1, 1), actual.get(2));
+		assertEquals(new CS2420StudentGeneric<Integer>("D", "E", 4, 4), actual.get(3));
+	}
+	
+	@Test
 	public void testOrderedByScore() {
 		ArrayList<CS2420StudentGeneric<Integer>> actual = phase3Class.getOrderedByScore(0);
 		assertEquals(4, actual.size());
@@ -278,5 +334,20 @@ public class CS2420ClassGenericTester {
 		assertEquals(new CS2420StudentGeneric<Integer>("A", "B", 2, 2), actual.get(3));
 		assertEquals(new CS2420StudentGeneric<Integer>("A", "C", 1, 1), actual.get(1));
 		assertEquals(new CS2420StudentGeneric<Integer>("D", "E", 4, 4), actual.get(0));
+	}
+	
+	@Test
+	public void testOrderedByScoreCutOff70() {
+		ArrayList<CS2420StudentGeneric<Integer>> actual = phase3Class.getOrderedByScore(70);
+		assertEquals(3, actual.size());
+		assertEquals(new CS2420StudentGeneric<Integer>("A", "C", 3, 3), actual.get(2));
+		assertEquals(new CS2420StudentGeneric<Integer>("A", "C", 1, 1), actual.get(1));
+		assertEquals(new CS2420StudentGeneric<Integer>("D", "E", 4, 4), actual.get(0));
+	}
+	
+	@Test
+	public void testOrderedByScoreCutOff100() {
+		ArrayList<CS2420StudentGeneric<Integer>> actual = phase3Class.getOrderedByScore(100);
+		assertEquals(0, actual.size());
 	}
 }

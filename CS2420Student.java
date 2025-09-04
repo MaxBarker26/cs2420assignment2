@@ -39,6 +39,9 @@ public class CS2420Student extends UofUStudent {
 	 * @param category of the assignment
 	 */
 	public void addScore(double score, String category) {	
+		if (score < 0) {
+			throw new IllegalArgumentException();
+		}
 		switch (category) {
 		case "assignment":
 			this.assignment += score;

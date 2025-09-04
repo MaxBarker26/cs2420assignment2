@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +14,8 @@ import java.util.ArrayList;
 /**
  * This class contains tests for CS2420Class.
  * 
- * @author Prof. Parker & Josi Gac & Max Barker
- * @version Sept 3, 2025
+ * @author Prof. Parker & ??
+ * @version August 31, 2023
  */
 public class CS2420ClassTester {
 
@@ -78,11 +79,33 @@ public class CS2420ClassTester {
 	}
 	
 	@Test
+	public void testVerySmallLookupUNIDDoesNotExist() {
+		CS2420Student actual = verySmallClass.lookup(00001111);
+		assertEquals(null, actual);
+	}
+	
+	@Test
 	public void testVerySmallLookupContactInfo() {
 		UofUStudent expectedStudent = new UofUStudent("Riley", "Nguyen", 4545454);
 		ArrayList<CS2420Student> actualStudents = verySmallClass.lookup(new EmailAddress("hello", "gmail.com"));
 		assertEquals(1, actualStudents.size());
 		assertEquals(expectedStudent, actualStudents.get(0));
+	}
+	
+	@Test
+	public void testVerySmallLookupContactInfoDoesNotExist() {
+		ArrayList<CS2420Student> actualStudents = verySmallClass.lookup(
+				new EmailAddress("hello", "yahoo.com"));
+		assertEquals(0, actualStudents.size());
+	}
+	
+	@Test
+	public void testVerySmallLookupContactInfoShareContactInfo() {
+		verySmallClass.addStudent(new CS2420Student("Lane", "Doe", 1010100, 
+				new EmailAddress("hi", "gmail.com")));
+		ArrayList<CS2420Student> actualStudents = verySmallClass.lookup(
+				new EmailAddress("hi", "gmail.com"));
+		assertEquals(2, actualStudents.size());
 	}
 	
 	@Test
@@ -106,6 +129,12 @@ public class CS2420ClassTester {
 		student.addScore(75, "exam");
 		student.addScore(89.2, "quiz");
 		assertEquals(0, student.computeFinalScore(), 0);
+	}
+	
+	@Test
+	public void testVerySmallStudentAddNegativeScore() {
+		CS2420Student student = verySmallClass.lookup(2323232);
+		assertThrows(IllegalArgumentException.class, () -> student.addScore(-1, "assignment"));
 	}
 	
 	@Test
